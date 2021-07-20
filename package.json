@@ -1,0 +1,15 @@
+{
+  "name": "BDDTutorial",
+  "version": "1.0.0",
+  "main": "../src/index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "jsverify": "^0.8.4",
+    "mocha": "^8"
+  }
+}
