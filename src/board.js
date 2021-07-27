@@ -33,3 +33,13 @@ export function guessAtLocation(board, coordinates) {
     
     return didHit;
 }
+
+export function placeShipAtLocation(board, coordinates) {    
+    const [x, y] = coordinates;
+
+    if (board[x][y] != EMPTY)
+        return false;
+
+    board[x][y] = SHIP;
+    return true;
+}
