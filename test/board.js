@@ -38,6 +38,29 @@ describe('Board Methods', function() {
         boardWithOneShip[x_ship][y_ship] = SHIP;
     });
 
+    const TEST_NAME__BOARD_STATE_OUTSIDE_OF_LOCATION_IS_UNCHANGED_FOR_METHOD = 'should not affect tile state on the board other than the given location';
+    const testBoardStateOutsideOfLocationIsSameForMethod = function(board, location, methodToTest) {
+        const flattenedBoardBefore = board.flat(1);
+
+        methodToTest(board, location);
+
+        const flattenedBoardAfter = board.flat(1);
+        const expectedMutatedFlattenedBoardIndex = (x_ship * board.length) + y_ship;
+
+        let diffCount = 0, mutatedIndex;
+        for (let i = 0; i < flattenedBoardBefore.length; i++) {
+            if (flattenedBoardBefore[i] != flattenedBoardAfter[i]) {
+                diffCount++;
+                mutatedIndex = i;
+            }
+        }
+
+        expect(diffCount).to.be.equal(1, 'should only mutate one tile on the board');
+        expect(mutatedIndex).to.be.equal(expectedMutatedFlattenedBoardIndex, 'should only the mutate tile for the given location');
+    }
+
+
+
     describe('isShipAtLocation', function() {
 
         it('should correctly report no ship at a given location on an empty board', function() {
@@ -79,29 +102,14 @@ describe('Board Methods', function() {
             expect(boardWithOneShip[x_ship][y_ship]).to.be.equal(HIT, 'tile state after guess, to be HIT');
         });
 
-        it('should not affect tile state on the board other than the given location', function() {
-            const flattenedBoardBefore = boardWithOneShip.flat(1);
-
-            guessAtLocation(boardWithOneShip, locationOfShip);
-
-            const flattenedBoardAfter = boardWithOneShip.flat(1);
-            const expectedMutatedIndex = (x_ship * boardWithOneShip.length) + y_ship;
-
-            let diffCount = 0, mutatedIndex;
-            for (let i = 0; i < flattenedBoardBefore.length; i++) {
-                if (flattenedBoardBefore[i] != flattenedBoardAfter[i]) {
-                    diffCount++;
-                    mutatedIndex = i;
-                }
-            }
-
-            expect(diffCount).to.be.equal(1, 'should only mutate one tile on the board');
-            expect(mutatedIndex).to.be.equal(expectedMutatedIndex, 'should only the mutate tile for the given location');
+        it(TEST_NAME__BOARD_STATE_OUTSIDE_OF_LOCATION_IS_UNCHANGED_FOR_METHOD, function() {
+            testBoardStateOutsideOfLocationIsSameForMethod(boardWithOneShip, locationOfShip, guessAtLocation);
         });
 
     });
 
     describe('placeShipAtLocation', function() {
+
         it('should change the tile state for an empty board, at the given valid location from EMPTY to SHIP and method should return true', function() {
             expect(placeShipAtLocation(emptyBoard, locationOfShip)).to.be.true;
             expect(emptyBoard[x_ship][y_ship]).to.be.equal(SHIP, 'should mutate the tile for the given location to SHIP');
@@ -114,6 +122,9 @@ describe('Board Methods', function() {
             expect(tileStateAfter).to.be.equal(tileStateBefore, 'should NOT mutate the tile for the given location');
         });
 
-        it('should not mutate any other tiles apart from perhaps at the given location')
+        it(TEST_NAME__BOARD_STATE_OUTSIDE_OF_LOCATION_IS_UNCHANGED_FOR_METHOD, function() {
+            testBoardStateOutsideOfLocationIsSameForMethod(emptyBoard, locationOfShip, placeShipAtLocation);
+        })
+        
     })
 });

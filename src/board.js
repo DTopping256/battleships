@@ -16,7 +16,6 @@ export function getEmptyBoard() {
     return board;
 };
 
-
 export function isShipAtLocation(board, coordinates) {
     const [x, y] = coordinates; 
     const tileState = board[x][y];
