@@ -1,12 +1,14 @@
 export const [ SHIP, HIT, EMPTY, MISS ] = [ 'S', 'X', '-', 'O' ];
+export const MAX_SHIP_TILES = 17; 
+export const BOARD_SIDE_LENGTH = 10;
 
 export function getEmptyBoard() {
     const board = [];
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < BOARD_SIDE_LENGTH; i++) {
         const column = [];
 
-        for (let j = 0; j < 9; j++) {
+        for (let j = 0; j < BOARD_SIDE_LENGTH; j++) {
             column.push(EMPTY);
         }
 
@@ -15,6 +17,22 @@ export function getEmptyBoard() {
 
     return board;
 };
+
+export function getRandomStartingBoard() {
+    const randomFlattenedIndices = new Set();
+    while (randomFlattenedIndices.size < MAX_SHIP_TILES) {
+        randomFlattenedIndices.add(Math.round(Math.random() * ((BOARD_SIDE_LENGTH**2) - 1)));
+    }
+
+    const board = getEmptyBoard();
+    for (let flattenedIndex of randomFlattenedIndices.values()) {
+        let x = flattenedIndex % BOARD_SIDE_LENGTH;
+        let y = Math.floor(flattenedIndex / BOARD_SIDE_LENGTH);
+        board[x][y] = SHIP;
+    }
+    
+    return board;
+}
 
 export function isShipAtLocation(board, coordinates) {
     const [x, y] = coordinates; 
@@ -41,4 +59,15 @@ export function placeShipAtLocation(board, coordinates) {
 
     board[x][y] = SHIP;
     return true;
+}
+
+export function obfuscateBoard(board) {
+    return board.map((column) => {
+        return column.map((tileState) => {
+            if (tileState == SHIP)
+                return EMPTY;
+
+            return tileState;
+        });
+    });
 }
