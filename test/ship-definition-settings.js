@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ShipDefinition, ShipDefinitionSettings } from '../src/ship-definition-settings.js';
 
 describe('Ship Settings', function() {
-    describe('ShipDefinitionSettings', function() {
+    describe('ShipDefinitionSettings methods', function() {
 
         describe('Add', function() {
             let shipDefinitionSettings = null;
