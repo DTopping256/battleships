@@ -14,11 +14,26 @@ export class ShipDefinitionSettings {
     }
 
     Add(shipDefinition) {
+        if (!ShipDefinition.IsShipDefinition(shipDefinition))
+            throw new TypeError('shipDefinition argument is not an instance of the ShipDefinition class.');
+
+        if (this._ShipDefinitions[shipDefinition.Name] != null)
+            throw new Error('Cannot add shipDefinition when there is already one with the same "name".')
+
         this._ShipDefinitions[shipDefinition.Name] = shipDefinition;
     }
 
+    Remove(shipDefinitionName) {
+        delete this._ShipDefinitions[shipDefinitionName];
+    }
+
     GetAll() {
-        return this._ShipDefinitions;
+        return Object.values(this._ShipDefinitions)
+            .map(sd => sd.Clone())
+            .reduce((obj, sd) => {
+                obj[sd.Name] = sd;
+                return obj;
+            }, Object());
     }
 }
 
@@ -32,5 +47,19 @@ export class ShipDefinition {
         this._Name = name;
         this._Size = size;
         this._Quantity = quantity;
+    }
+
+    static IsShipDefinition(o) {
+        return (
+            o
+            && typeof(o) === 'object'
+            && o["_Name"] != null 
+            && o["_Size"] != null 
+            && o["_Quantity"] != null 
+        );
+    }
+
+    Clone() {
+        return new ShipDefinition(this.Name, this.Size, this.Quantity);
     }
 }
