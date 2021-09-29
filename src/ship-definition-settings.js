@@ -1,14 +1,9 @@
-/**
- *   {
- *       'Carrier': new ShipDefinition('Carrier', 3, 2),
- *       'Cruiser': new ShipDefinition('Cruiser', 2, 1),
- *       'Destroyer': ...,
- *       'Battleship': ...,
- *       'Submarine': ...,
- *   }
- */
+"use strict";
+import { castTo } from "./utils.js";
 
 export class ShipDefinitionSettings {
+    [Symbol.toStringTag] = 'ShipDefinitionSettings';
+    
     constructor() {
         this._ShipDefinitions = {};
     }
@@ -34,6 +29,18 @@ export class ShipDefinitionSettings {
                 obj[sd.Name] = sd;
                 return obj;
             }, Object());
+    }
+
+    static _Caster = castTo(ShipDefinitionSettings);
+    static Cast(o) {
+        const shipDefSettings = ShipDefinitionSettings._Caster(o);
+        shipDefSettings._ShipDefinitions = Object.values(shipDefSettings._ShipDefinitions)
+            .reduce((acc, shipDefinitionObj) => {
+                const shipDefinition = ShipDefinition.Cast(shipDefinitionObj);
+                acc[shipDefinition.Name] = shipDefinition;
+                return acc;
+            }, {});
+        return shipDefSettings;
     }
 }
 
@@ -62,4 +69,7 @@ export class ShipDefinition {
     Clone() {
         return new ShipDefinition(this.Name, this.Size, this.Quantity);
     }
+
+    static _Caster = castTo(ShipDefinition);
+    static Cast(o) { return ShipDefinition._Caster(o); }
 }

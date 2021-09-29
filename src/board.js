@@ -1,3 +1,4 @@
+"use strict";
 export const [ SHIP, HIT, EMPTY, MISS ] = [ 'S', 'X', '-', 'O' ];
 export const MAX_SHIP_TILES = 17; 
 export const BOARD_SIDE_LENGTH = 10;
