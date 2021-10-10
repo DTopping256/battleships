@@ -1,19 +1,92 @@
 import { expect, should } from 'chai';
-import { Game } from "../src/game.js"
+import { Game, PLAYER1, PLAYER2, GAME_STATUS } from "../src/game.js"
+import { GameSettings } from "../src/game-settings.js"
+import { ShipDefinition } from "../src/ship-definition-settings.js"
 
 describe('Game methods', function() {
     
     describe('Initialise', function() {
-        it('should be provided game settings to store');
-        it('should start the game loop');
+        let game;
+        beforeEach(function() {
+            game = new Game();
+        });
+
+        it('should be provided game settings to store', function() {
+            game.Initialise(
+                GameSettings.Cast(
+                    {
+                        _BoardSize: 10,
+                        _ShipDefinitionSettings: {
+                            Carrier: new ShipDefinition('Carrier', 3, 1)
+                        }
+                    }
+                )
+            );
+        });
     });
 
-    describe('SubmitShipPlacement', function () {
-        it('should take an array of ShipPlacements as well as the player ID and if both players submit their ships then progress the game state')
-        it('should throw an exception if the same player submits their ships twice')
-        it('should throw an exception if called after the game state has progressed to players making guesses')
-        it('should throw an exception if the ship placements are invalid because there aren\'t as the same quantities of ships as in the game settings')
-        it('should throw an exception if the ship placements are invalid because the coordinates of the ships are invalid')
+    describe('SubmitShipPlacement', function() {
+        let game;
+        let validPlayer1PlacementTurnInfo;
+        let invalidPlacement;
+        
+        beforeEach(function() {
+            game = new Game();
+            validPlayer1PlacementTurnInfo = {
+                _ShipPlacements:
+                {
+                    Carrier: {
+                        _Start: [0,0],
+                        _End: [2,3]
+                    }
+                },
+                _Player: PLAYER1
+            };
+        });
+
+        it('should throw before Initialisation', function() {
+            expect(
+                () => { game.SubmitShipPlacement(validPlayer1PlacementTurnInfo); }
+            )
+            .to.throw();
+        })
+
+        describe('after initialisation', function() {
+            
+            beforeEach(function() {
+                game.Initialise(
+                    GameSettings.Cast(
+                        {
+                            _BoardSize: 10,
+                            _ShipDefinitionSettings: {
+                                Carrier: new ShipDefinition('Carrier', 3, 1)
+                            }
+                        }
+                    )
+                );
+            });
+
+            it('should take an object containing ShipPlacements as well as the player ID, if this is the first player to submit their placement then the state should stay on SHIP_PLACEMENT but the ReadyPlayers would contain the ID of the player which submitted the placement', function() {
+                let player1PlacementGameState = game.SubmitShipPlacement(validPlayer1PlacementTurnInfo);
+                
+                expect(player1PlacementGameState).to.be.an('object').with.a.property('Status');
+                expect(player1PlacementGameState['Status']).to.equal(GAME_STATUS.SHIP_PLACEMENT);
+                expect(player1PlacementGameState).to.be.an('object').with.a.property('ReadyPlayers');
+                expect(player1PlacementGameState['ReadyPlayers']).to.be.an('array').to.include.members([PLAYER1]);
+            });
+    
+            it('should throw an exception if the same player submits their ships twice');
+            it('should throw an exception if the ship placements are invalid because there aren\'t as the same quantities of ships as in the game settings')
+            it('should throw an exception if the ship placements are invalid because the coordinates of the ships are invalid')
+            
+            describe('after player 1 has submitted', function() {
+                //TODO: beforeEach where the player1PlacementGameState is already applied. 
+
+                it('should progress the game state to GUESSING and ReadyPlayers should be an empty array');
+                it('should throw an exception if called after the game state has progressed to players making guesses')
+            });
+        });
+
     });
 
     describe('SubmitGuess', function() {

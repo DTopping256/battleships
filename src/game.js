@@ -7,6 +7,9 @@ export const GAME_STATUS = Object.freeze({
     GUESSING: 'GUESSING'
 });
 
+export const PLAYER1 = "PLAYER1"
+export const PLAYER2 = "PLAYER2"
+
 export class Game {
     Initialise(gameSettings) {
         this._GameSettings = gameSettings; // Contains settings specific to this game instance.
@@ -16,19 +19,14 @@ export class Game {
         this._Boards = {};
         this._Ships = {};
 
-        this.StartGame();
+        return ({ Status: GAME_STATUS.SHIP_PLACEMENT, ReadyPlayers: [] });
     }
 
-    AddPlayer(id) {
-        if (this._PlayerIDs.has(id))
-            throw new Error('Player ID not unique.')
-        
-        this._PlayerIDs.add(id);
-        this._Boards[id] = getEmptyBoard();
-        this._Ships[id] = [];
-    }
-
-    SubmitShipPlacement(jsonStr) {
-
+    SubmitShipPlacement(placementTurnInfo) {
+        if (!this._GameSettings)
+            throw Error('Cannot SubmitShipPlacements before the Game has been initialised.');
+            
+        let { _Player, _ShipPlacements } = placementTurnInfo;
+        return {Status: GAME_STATUS.SHIP_PLACEMENT, ReadyPlayers: [_Player]};
     }
 }
